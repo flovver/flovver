@@ -1,3 +1,5 @@
+const colors = require('tailwindcss/colors')
+
 module.exports = {
   darkMode: 'class', // This can be 'media' if preferred.
   purge: [
@@ -8,7 +10,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        svelte: '#ff3e00',
+        gray: colors.trueGray,
       },
     },
   },
