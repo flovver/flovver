@@ -7,6 +7,7 @@
   import Settings from '../icons/Settings.svelte';
 
   export let projectName: String;
+  export let currentScreen: "model" | "view" | "update" | "settings" = "settings";
 
   let menu = {
     show: false,
@@ -42,9 +43,21 @@
         <div class="flex items-center">
           <div class="md:block">
             <div class="flex items-baseline">
-              <button class="bg-blue-600 text-white px-5 py-3.5 text-sm font-medium  focus:outline-none">Model</button>
-              <button class="text-gray-200 hover:bg-gray-900 hover:text-white px-5 py-3.5 text-sm font-medium focus:outline-none">Update</button>
-              <button class="text-gray-200 hover:bg-gray-900 hover:text-white px-5 py-3.5 text-sm font-medium focus:outline-none">View</button>
+              <button 
+                on:click={() => currentScreen = "model"}
+                class="{currentScreen == "model" ? "bg-blue-600 text-white" : "text-gray-200 hover:bg-gray-900 hover:text-white"} px-5 py-3.5 text-sm font-medium  focus:outline-none">
+                Model
+              </button>
+              <button 
+                on:click={() => currentScreen = "update"}
+                class="{currentScreen == "update" ? "bg-blue-600 text-white" : "text-gray-200 hover:bg-gray-900 hover:text-white"} px-5 py-3.5 text-sm font-medium focus:outline-none">
+                Update
+              </button>
+              <button 
+                on:click={() => currentScreen = "view"}
+                class="{currentScreen == "view" ? "bg-blue-600 text-white" : "text-gray-200 hover:bg-gray-900 hover:text-white"} px-5 py-3.5 text-sm font-medium focus:outline-none">
+                View
+              </button>
 
             </div>
           </div>
@@ -57,7 +70,10 @@
                 <button title="Run" class="flex-shrink-0 px-3 hover:bg-gray-900 text-gray-300 hover:text-white focus:outline-none">
                     <Play/>
                 </button>
-                <button title="Settings" class="flex-shrink-0 px-3 hover:bg-gray-900 text-gray-300 hover:text-white focus:outline-none">
+                <button 
+                  title="Settings"
+                  on:click={() => currentScreen = "settings"}
+                  class="{currentScreen == "settings" ? "bg-blue-600 text-white" : "hover:bg-gray-900 text-gray-300 hover:text-white"} flex-shrink-0 px-3 focus:outline-none">
                     <Settings/>
                 </button>
                 <div class="relative inline-block text-left" bind:this={menu.element}>
@@ -80,7 +96,9 @@
                               <div class="text-gray-400">r</div>
                             </div>
                           </button>
-                          <button class="block px-4 py-2 w-full text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none">
+                          <button 
+                            on:click={() => currentScreen = "settings"}  
+                            class="block px-4 py-2 w-full text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none">
                             <div class="flex justify-between">
                               <div>Settings</div>
                               <div class="text-gray-400">p</div>
