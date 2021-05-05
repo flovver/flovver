@@ -10,17 +10,15 @@
 
 <div class="fixed inset-y-12 flex h-full {position == "right" ? "right-0" : ""}">
     <div class="relative {isVisible ? "w-screen" : "w-10"} max-w-xs">
-        <div class="h-full flex flex-col {position == "right" ? "border-l-2" : "border-r-2"} bg-gray-100">
+        <div class="h-full flex flex-col {position == "right" ? "border-l" : "border-r"} bg-white border-gray-300">
             {#if isVisible}
-                <div class="flex px-4 py-2 justify-between border-b-2">
+                <div class="flex px-4 py-2 justify-between border-b border-gray-300">
                     {#if position == 'right'}
                         <button type="button" on:click={() => isVisible = false}>
                             <ChevronRight/>
                         </button>
                     {/if}
-                    {#if isVisible}
-                        {title}
-                    {/if}
+                    {title}
                     {#if position == 'left'}
                         <button type="button" on:click={() => isVisible = false}>
                             <ChevronLeft/>

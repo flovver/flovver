@@ -3,7 +3,7 @@
 </script>
 
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="px-4 py-6 sm:px-0">
+    <div class="px-4 py-6 my-12 sm:px-0">
         <h1 class="text-2xl">Settings</h1>
         <div class="mt-10 sm:mt-0">
               <div class="mt-5">

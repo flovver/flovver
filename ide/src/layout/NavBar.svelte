@@ -37,7 +37,7 @@
   });
 </script>
 
-<nav class="bg-gray-800">
+<nav class="fixed w-full z-50 bg-gray-800">
     <div class="mx-auto px-0">
       <div class="flex items-center justify-between h-12">
         <div class="flex items-center">
