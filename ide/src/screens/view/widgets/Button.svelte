@@ -22,9 +22,9 @@
 <input
     on:mousedown={onMouseDown}
     value={caption}
-    type="text"
+    type="button"
     readonly
-    class="fixed border cursor-move focus:outline-none px-2 py-1 focus:ring-2 focus:ring-blue-600"
+    class="fixed border cursor-move px-2 py-1 bg-gray-50 hover:bg-gray-50 focus:ring-2 focus:ring-blue-600"
     style="left: {viewportOffsetX + x}px; top: {viewportOffsetY +
         y}px; width: {width}px; height: {height}px;"
 />

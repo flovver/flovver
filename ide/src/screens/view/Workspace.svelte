@@ -1,9 +1,8 @@
 <script lang="ts">
     import { makeDnD } from "./widgets/dnd-util";
+    import { widgetsByName } from "./widgets/widgets";
 
-    import TextBox from "./widgets/TextBox.svelte";
-
-    let isDragHovered = false;
+    import Pane from "./Pane.svelte";
 
     let viewportOffsetX: number = 0;
     let viewportOffsetY: number = 0;
@@ -12,6 +11,30 @@
         viewportOffsetX += e.movementX;
         viewportOffsetY += e.movementY;
     });
+
+    const screen = { width: window.innerWidth, height: window.innerHeight };
+    const pane = { width: 800, height: 600 };
+
+    $: viewportOffsetX = (screen.width - pane.width) / 2;
+    $: viewportOffsetY = (screen.height - pane.height) / 2;
+
+    window.addEventListener("resize", (_) => {
+        screen.width = window.innerWidth;
+        screen.height = window.innerHeight;
+    });
+
+    let widgets = [];
+
+    function addWidget(name: string, e: DragEvent) {
+        widgets.push({
+            caption: name,
+            x: e.clientX - viewportOffsetX,
+            y: e.clientY - viewportOffsetY,
+            component: widgetsByName[name],
+        });
+
+        widgets = widgets;
+    }
 </script>
 
 <svelte:window on:mouseup={onMouseUp} />
@@ -19,15 +42,24 @@
 <div
     on:mousedown={onMouseDown}
     on:mousemove={onMouseMove}
-    on:dragenter={(_) => (isDragHovered = true)}
-    on:dragleave={(_) => (isDragHovered = false)}
-    on:drop={(e) => {
-        isDragHovered = false;
-        console.log(e);
-    }}
-    on:dragover={(e) => e.preventDefault()}
-    class="fixed w-screen h-screen {isDragHovered
-        ? 'bg-gray-200'
-        : 'bg-gray-100'}"
-/>
-<TextBox x={500} y={100} bind:viewportOffsetX bind:viewportOffsetY />
+    class="fixed w-screen h-screen bg-gray-100"
+>
+    <Pane
+        {addWidget}
+        bind:width={pane.width}
+        bind:height={pane.height}
+        bind:viewportOffsetX
+        bind:viewportOffsetY
+    />
+</div>
+
+{#each widgets as widget}
+    <svelte:component
+        this={widget.component}
+        caption={widget.caption}
+        bind:x={widget.x}
+        bind:y={widget.y}
+        bind:viewportOffsetX
+        bind:viewportOffsetY
+    />
+{/each}

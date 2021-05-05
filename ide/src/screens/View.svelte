@@ -1,36 +1,23 @@
 <script lang="ts">
-    import SideBar from '../layout/SideBar.svelte';
+    import SideBar from "../layout/SideBar.svelte";
 
-    import LabelIcon from '../icons/widgets/Label.svelte';
-    import TextBoxIcon from '../icons/widgets/TextBox.svelte';
-    import ButtonIcon from '../icons/widgets/Button.svelte';
+    import { widgetList } from "./view/widgets/widgets";
 
-    import WidgetSet from './view/widget-set/WidgetSet.svelte';
-    import WidgetSetItem from './view/widget-set/WidgetSetItem.svelte';
-    import Workspace from './view/Workspace.svelte';
+    import WidgetSet from "./view/widget-set/WidgetSet.svelte";
+    import WidgetSetItem from "./view/widget-set/WidgetSetItem.svelte";
+    import Workspace from "./view/Workspace.svelte";
 </script>
 
-<Workspace/>
+<Workspace />
 
 <SideBar title="Widgets" position="left">
-
     <WidgetSet>
-
-        <WidgetSetItem title="Label">
-            <LabelIcon slot="icon"/>
-        </WidgetSetItem>
-
-        <WidgetSetItem title="TextBox">
-            <TextBoxIcon slot="icon"/>
-        </WidgetSetItem>
-
-        <WidgetSetItem title="Button">
-            <ButtonIcon slot="icon"/>
-        </WidgetSetItem>
-
+        {#each widgetList as widget}
+            <WidgetSetItem title={widget.title}>
+                <svelte:component this={widget.icon} slot="icon" />
+            </WidgetSetItem>
+        {/each}
     </WidgetSet>
-
 </SideBar>
 
-<SideBar title="Preferences" position="right">
-</SideBar>
+<SideBar title="Preferences" position="right" />

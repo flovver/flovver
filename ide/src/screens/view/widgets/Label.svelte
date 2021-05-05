@@ -1,6 +1,8 @@
 <script lang="ts">
     import { makeDnD } from "./dnd-util";
 
+    import LabelIcon from "../../../icons/widgets/Label.svelte";
+
     export let caption: string = "";
 
     export let x: number;
@@ -19,12 +21,16 @@
 
 <svelte:window on:mouseup={onMouseUp} on:mousemove={onMouseMove} />
 
-<input
+<div
+    tabindex="0"
     on:mousedown={onMouseDown}
-    value={caption}
-    type="text"
-    readonly
-    class="fixed border cursor-move focus:outline-none px-2 py-1 focus:ring-2 focus:ring-blue-600"
+    class="fixed cursor-move px-2 py-1 focus:ring-2 focus:ring-blue-600"
     style="left: {viewportOffsetX + x}px; top: {viewportOffsetY +
         y}px; width: {width}px; height: {height}px;"
-/>
+>
+    {#if caption.trim().length > 0}
+        {caption}
+    {:else}
+        <LabelIcon />
+    {/if}
+</div>
