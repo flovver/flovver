@@ -63,7 +63,7 @@
         <div class="mt-4">
             <div class="px-4 font-medium text-gray-900">Position</div>
             <div class="grid grid-cols-2 gap-4 p-4">
-                {#if currentWidget.x}
+                {#if currentWidget.setX}
                     <div class="flex justyify-center">
                         <div class="mr-2 text-gray-600">x</div>
                         <input
@@ -74,7 +74,7 @@
                         />
                     </div>
                 {/if}
-                {#if currentWidget.y}
+                {#if currentWidget.setY}
                     <div class="flex  justyify-center">
                         <div class="mr-2 text-gray-600">y</div>
                         <input
