@@ -35,12 +35,21 @@
 
         widgets = widgets;
     }
+
+    export let currentWidget;
+
+    function setCurrentWidget(w: any) {
+        currentWidget = w;
+    }
 </script>
 
 <svelte:window on:mouseup={onMouseUp} />
 
 <div
-    on:mousedown={onMouseDown}
+    on:mousedown={(e) => {
+        setCurrentWidget(null);
+        onMouseDown(e);
+    }}
     on:mousemove={onMouseMove}
     class="fixed w-screen h-screen bg-gray-100"
 >
@@ -56,7 +65,9 @@
 {#each widgets as widget}
     <svelte:component
         this={widget.component}
-        caption={widget.caption}
+        bind:caption={widget.caption}
+        {setCurrentWidget}
+        bind:widget
         bind:x={widget.x}
         bind:y={widget.y}
         bind:viewportOffsetX

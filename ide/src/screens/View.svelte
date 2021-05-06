@@ -5,10 +5,14 @@
 
     import WidgetSet from "./view/widget-set/WidgetSet.svelte";
     import WidgetSetItem from "./view/widget-set/WidgetSetItem.svelte";
+
     import Workspace from "./view/Workspace.svelte";
+    import Properties from "./view/Properties.svelte";
+
+    let currentWidget;
 </script>
 
-<Workspace />
+<Workspace bind:currentWidget />
 
 <SideBar title="Widgets" position="left">
     <WidgetSet>
@@ -20,4 +24,6 @@
     </WidgetSet>
 </SideBar>
 
-<SideBar title="Preferences" position="right" />
+<SideBar title="Properties" position="right">
+    <Properties bind:currentWidget />
+</SideBar>

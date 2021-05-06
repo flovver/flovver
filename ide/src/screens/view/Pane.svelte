@@ -16,10 +16,11 @@
 </script>
 
 <div
+    tabindex="0"
     on:dragenter={(_) => (isDragHovered = true)}
     on:dragleave={(_) => (isDragHovered = false)}
     on:drop={onDrop}
     on:dragover={(e) => e.preventDefault()}
-    class="fixed {isDragHovered ? 'bg-gray-50' : 'bg-white'} shadow-lg"
+    class="fixed {isDragHovered ? 'bg-gray-50' : 'bg-white'} shadow-lg focus:ring-2 focus:ring-blue-600"
     style="left: {viewportOffsetX}px; top: {viewportOffsetY}px; width: {width}px; height: {height}px"
 />

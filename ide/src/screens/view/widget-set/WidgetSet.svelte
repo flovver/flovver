@@ -1,3 +1,3 @@
-<div class="flex flex-wrap mt-2">
+<div class="flex flex-wrap justify-evenly mt-2">
     <slot></slot>
 </div>
