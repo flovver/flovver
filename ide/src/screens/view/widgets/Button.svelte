@@ -11,6 +11,7 @@
     export let viewportOffsetX: number = 0;
     export let viewportOffsetY: number = 0;
 
+    export let deleteAction: () => void;
     export let setCurrentWidget: (any) => void;
 
     const setCurrentRefinedWidget = () =>
@@ -27,6 +28,8 @@
             height: height,
             setH: (v) => (height = v),
             edit: false,
+            hasPosition: true,
+            deleteAction: deleteAction,
         });
 
     const { onMouseDown, onMouseUp, onMouseMove } = makeDnD((e) => {

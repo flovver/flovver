@@ -26,11 +26,18 @@
     let widgets = [];
 
     function addWidget(name: string, e: DragEvent) {
+        const widgetPosition = widgets.length;
+
         widgets.push({
             caption: name,
             x: e.clientX - viewportOffsetX,
             y: e.clientY - viewportOffsetY,
             component: widgetsByName[name],
+            deleteAction: () => {
+                widgets.splice(widgetPosition, 1);
+                widgets = widgets;
+                setCurrentWidget(null);
+            },
         });
 
         widgets = widgets;
@@ -52,22 +59,22 @@
     }}
     on:mousemove={onMouseMove}
     class="fixed w-screen h-screen bg-gray-100"
->
-    <Pane
-        {addWidget}
-        bind:width={pane.width}
-        bind:height={pane.height}
-        bind:viewportOffsetX
-        bind:viewportOffsetY
-    />
-</div>
+/>
+<Pane
+    {addWidget}
+    {setCurrentWidget}
+    bind:width={pane.width}
+    bind:height={pane.height}
+    bind:viewportOffsetX
+    bind:viewportOffsetY
+/>
 
 {#each widgets as widget}
     <svelte:component
         this={widget.component}
         bind:caption={widget.caption}
+        deleteAction={widget.deleteAction}
         {setCurrentWidget}
-        bind:widget
         bind:x={widget.x}
         bind:y={widget.y}
         bind:viewportOffsetX

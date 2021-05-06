@@ -13,14 +13,30 @@
         isDragHovered = false;
         addWidget(e.dataTransfer.getData("widgetName"), e);
     }
+
+    export let setCurrentWidget: (any) => void;
+
+    const setCurrentRefinedWidget = () =>
+        setCurrentWidget({
+            name: "Pane",
+            width: width,
+            setW: (v) => (width = v),
+            height: height,
+            setH: (v) => (height = v),
+            edit: false,
+            hasPosition: true,
+        });
 </script>
 
 <div
     tabindex="0"
+    on:mousedown={setCurrentRefinedWidget}
     on:dragenter={(_) => (isDragHovered = true)}
     on:dragleave={(_) => (isDragHovered = false)}
     on:drop={onDrop}
     on:dragover={(e) => e.preventDefault()}
-    class="fixed {isDragHovered ? 'bg-gray-50' : 'bg-white'} shadow-lg focus:ring-2 focus:ring-blue-600"
+    class="fixed {isDragHovered
+        ? 'bg-gray-50'
+        : 'bg-white'} shadow-lg focus:ring-2 focus:ring-blue-600"
     style="left: {viewportOffsetX}px; top: {viewportOffsetY}px; width: {width}px; height: {height}px"
 />
