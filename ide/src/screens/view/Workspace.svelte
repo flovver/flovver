@@ -25,15 +25,13 @@
     let widgets = [];
 
     function addWidget(name: string, e: DragEvent) {
-        const widgetPosition = widgets.length;
-
         widgets.push({
             caption: name,
             x: e.clientX - viewportOffsetX,
             y: e.clientY - viewportOffsetY,
             component: widgetsByName[name],
-            deleteAction: () => {
-                widgets.splice(widgetPosition, 1);
+            deleteAction: (i) => {
+                widgets.splice(i, 1);
                 widgets = widgets;
                 setCurrentWidget(null);
             },
@@ -68,11 +66,11 @@
     bind:viewportOffsetY
 />
 
-{#each widgets as widget}
+{#each widgets as widget, i}
     <svelte:component
         this={widget.component}
         bind:caption={widget.caption}
-        deleteAction={widget.deleteAction}
+        deleteAction={() => widget.deleteAction(i)}
         {setCurrentWidget}
         bind:x={widget.x}
         bind:y={widget.y}

@@ -10,15 +10,22 @@
         viewportOffsetY += e.movementY;
     });
 
-    let types = [];
+    export let types = [];
+
+    let typeCounter = 1;
 
     function addType(name: string, e: DragEvent) {
         types.push({
-            name: "t",
+            name: `t${typeCounter++}`,
             baseType: name,
             x: e.clientX - viewportOffsetX,
             y: e.clientY - viewportOffsetY,
             component: typesByName[name],
+            deleteAction: (i) => {
+                types.splice(i, 1);
+                types = types;
+                setCurrentType(null);
+            },
         });
 
         types = types;
@@ -30,12 +37,21 @@
         isDragHovered = false;
         addType(e.dataTransfer.getData("typeName"), e);
     }
+
+    export let currentType;
+
+    function setCurrentType(t: any) {
+        currentType = t;
+    }
 </script>
 
 <svelte:window on:mouseup={onMouseUp} />
 
 <div
-    on:mousedown={onMouseDown}
+    on:mousedown={(e) => {
+        setCurrentType(null);
+        onMouseDown(e);
+    }}
     on:mousemove={onMouseMove}
     on:drop={onDrop}
     on:dragenter={(_) => (isDragHovered = true)}
@@ -46,11 +62,13 @@
         : 'bg-gray-100'}"
 />
 
-{#each types as t}
+{#each types as t, i}
     <svelte:component
         this={t.component}
         bind:name={t.name}
         baseType={t.baseType}
+        deleteAction={() => t.deleteAction(i)}
+        {setCurrentType}
         bind:x={t.x}
         bind:y={t.y}
         bind:viewportOffsetX

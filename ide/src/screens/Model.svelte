@@ -5,9 +5,12 @@
     import { typeList } from "./model/types/types";
     import Workspace from "./model/Workspace.svelte";
     import Properties from "./model/Properties.svelte";
+
+    let types = [];
+    let currentType;
 </script>
 
-<Workspace />
+<Workspace bind:types bind:currentType />
 
 <SideBar title="Types" position="left">
     <TypeSet>
@@ -18,5 +21,5 @@
 </SideBar>
 
 <SideBar title="Properties" position="right">
-    <Properties />
+    <Properties bind:types bind:currentType />
 </SideBar>

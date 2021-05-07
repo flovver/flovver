@@ -9,6 +9,8 @@ export const typeList = [
     { title: 'Variant' },
 ];
 
+export const builtinVariants = ['Int', 'String', 'Boolean', 'Unit'];
+
 export const typesByName = {
     'Int': Alias,
     'String': Alias,

@@ -4,10 +4,6 @@
     export let name: string = "";
     export let baseType: string = "";
 
-    // export let variants = [
-        // { name: "NewInput", baseType: "String" },
-        // { name: "ComputeFactorial", baseType: "Unit" },
-    // ];
     export let variants = [];
 
     export let x: number;
@@ -16,17 +12,40 @@
     export let viewportOffsetX: number = 0;
     export let viewportOffsetY: number = 0;
 
+    export let deleteAction: () => void;
+    export let setCurrentType: (any) => void;
+
+    const setCurrentRefinedType = () =>
+        setCurrentType({
+            name: name,
+            setName: (v) => (name = v),
+            baseType: baseType,
+            edit: false,
+            variant: {
+                variants: variants,
+                setVariants: (v) => (variants = v),
+            },
+            deleteAction: deleteAction,
+        });
+
     const { onMouseDown, onMouseUp, onMouseMove } = makeDnD((e) => {
         x += e.movementX;
         y += e.movementY;
     });
+
+    function withCurrentType(handler: (e: MouseEvent) => void) {
+        return (e: MouseEvent) => {
+            setCurrentRefinedType();
+            handler(e);
+        };
+    }
 </script>
 
 <svelte:window on:mouseup={onMouseUp} on:mousemove={onMouseMove} />
 
 <div
     tabindex="0"
-    on:mousedown={onMouseDown}
+    on:mousedown={withCurrentType(onMouseDown)}
     class="fixed bg-white shadow rounded cursor-move focus:ring-2 focus:ring-blue-600"
     style="left: {viewportOffsetX + x}px; top: {viewportOffsetY + y}px;"
 >
