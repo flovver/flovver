@@ -99,6 +99,7 @@
             <div class="px-4 font-medium text-gray-900">Role</div>
             <div class="flex gap-2 p-4">
                 <button
+                    on:click={currentType.setModel}
                     type="submit"
                     class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
@@ -106,6 +107,7 @@
                 </button>
                 {#if currentType.baseType == "Variant"}
                     <button
+                        on:click={currentType.setMessage}
                         type="submit"
                         class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >

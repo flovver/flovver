@@ -10,8 +10,11 @@
     export let viewportOffsetX: number = 0;
     export let viewportOffsetY: number = 0;
 
+    export let model: boolean;
+    export let setModel: () => void;
+
     export let deleteAction: () => void;
-    export let setCurrentType: (any) => void;
+    export let setCurrentType: (t: any) => void;
 
     const setCurrentRefinedType = () =>
         setCurrentType({
@@ -20,6 +23,7 @@
             baseType: baseType,
             edit: false,
             deleteAction: deleteAction,
+            setModel: setModel,
         });
 
     const { onMouseDown, onMouseUp, onMouseMove } = makeDnD((e) => {
@@ -40,7 +44,9 @@
 <div
     tabindex="0"
     on:mousedown={withCurrentType(onMouseDown)}
-    class="fixed bg-white shadow rounded cursor-move px-2 py-1 focus:ring-2 focus:ring-blue-600"
+    class="fixed {model
+        ? 'bg-blue-400'
+        : 'bg-white'} shadow rounded cursor-move px-2 py-1 focus:ring-2 focus:ring-blue-600"
     style="left: {viewportOffsetX + x}px; top: {viewportOffsetY + y}px;"
 >
     {name} <span class="mx-2 italic">of</span>

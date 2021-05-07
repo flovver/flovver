@@ -26,6 +26,16 @@
                 types = types;
                 setCurrentType(null);
             },
+            model: false,
+            setModel: (i) => {
+                types.forEach((v, i, a) => (v.model = false));
+                types[i].model = true;
+            },
+            message: false,
+            setMessage: (i) => {
+                types.forEach((v, i, a) => (v.message = false));
+                types[i].message = true;
+            },
         });
 
         types = types;
@@ -69,6 +79,10 @@
         baseType={t.baseType}
         deleteAction={() => t.deleteAction(i)}
         {setCurrentType}
+        bind:model={t.model}
+        setModel={() => t.setModel(i)}
+        bind:message={t.message}
+        setMessage={() => t.setMessage(i)}
         bind:x={t.x}
         bind:y={t.y}
         bind:viewportOffsetX

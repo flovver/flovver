@@ -12,8 +12,14 @@
     export let viewportOffsetX: number = 0;
     export let viewportOffsetY: number = 0;
 
+    export let model: boolean;
+    export let setModel: () => void;
+
+    export let message: any;
+    export let setMessage: () => void;
+
     export let deleteAction: () => void;
-    export let setCurrentType: (any) => void;
+    export let setCurrentType: (t: any) => void;
 
     const setCurrentRefinedType = () =>
         setCurrentType({
@@ -26,6 +32,8 @@
                 setVariants: (v) => (variants = v),
             },
             deleteAction: deleteAction,
+            setModel: setModel,
+            setMessage: setMessage,
         });
 
     const { onMouseDown, onMouseUp, onMouseMove } = makeDnD((e) => {
@@ -46,7 +54,9 @@
 <div
     tabindex="0"
     on:mousedown={withCurrentType(onMouseDown)}
-    class="fixed bg-white shadow rounded cursor-move focus:ring-2 focus:ring-blue-600"
+    class="fixed {model ? 'bg-blue-400' : 'bg-white'} {message
+        ? 'ring-2 ring-green-600'
+        : ''} shadow rounded cursor-move focus:ring-2 focus:ring-blue-600"
     style="left: {viewportOffsetX + x}px; top: {viewportOffsetY + y}px;"
 >
     <div class="flex justify-around px-2 py-1">
