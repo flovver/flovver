@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { makeDnD } from "./dnd-util";
-
+    import { makeDnD } from "../../common/dnd-util";
     import LabelIcon from "../../../icons/widgets/Label.svelte";
 
     export let caption: string = "";

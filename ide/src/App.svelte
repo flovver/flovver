@@ -8,7 +8,7 @@
 	import View from './screens/View.svelte';
 	import Settings from './screens/Settings.svelte';
 
-	let currentScreen: any = 'view';
+	let currentScreen: any = 'model';
 </script>
 
 <Tailwindcss />

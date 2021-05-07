@@ -1,11 +1,8 @@
 <script lang="ts">
     import SideBar from "../layout/SideBar.svelte";
-
     import { widgetList } from "./view/widgets/widgets";
-
     import WidgetSet from "./view/widget-set/WidgetSet.svelte";
     import WidgetSetItem from "./view/widget-set/WidgetSetItem.svelte";
-
     import Workspace from "./view/Workspace.svelte";
     import Properties from "./view/Properties.svelte";
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { makeDnD } from "./dnd-util";
+    import { makeDnD } from "../../common/dnd-util";
 
     export let caption: string = "";
 

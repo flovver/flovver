@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { makeDnD } from "./widgets/dnd-util";
+    import { makeDnD } from "../common/dnd-util";
     import { widgetsByName } from "./widgets/widgets";
-
     import Pane from "./Pane.svelte";
 
     let viewportOffsetX: number = 0;
