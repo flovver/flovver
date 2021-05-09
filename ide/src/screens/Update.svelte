@@ -1,7 +1,8 @@
 <script lang="ts">
-    import SideBar from '../layout/SideBar.svelte';
+    import SideBar from "../layout/SideBar.svelte";
+    import Workspace from "./update/Workspace.svelte";
 </script>
 
-<SideBar title="Functions" position="left">
-		
-</SideBar>
+<Workspace />
+
+<SideBar title="Functions" position="left" />
