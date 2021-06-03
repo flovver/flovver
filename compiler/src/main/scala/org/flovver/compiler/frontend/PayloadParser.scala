@@ -1,9 +1,8 @@
-package org.flovver.compiler.passes
+package org.flovver.compiler.frontend
 
-import org.flovver.compiler.ir.Payload
-import org.flovver.compiler.ir.Payload.Node.Definition
-import org.flovver.compiler.ir.Payload._
-import org.flovver.compiler.passes.PayloadParser.InnerFormat
+import org.flovver.compiler.frontend.Payload.Node.Definition
+import org.flovver.compiler.frontend.Payload._
+import org.flovver.compiler.frontend.PayloadParser.InnerFormat
 import org.json4s._
 import org.json4s.jackson.JsonMethods
 
@@ -45,7 +44,7 @@ trait PayloadParser {
     val view = View(pane, widgets)
 
     def convertNode(node: InnerFormat.Node): Node = {
-      import org.flovver.compiler.ir.Payload.Node._
+      import org.flovver.compiler.frontend.Payload.Node._
 
       node.`type` match {
         case "model-input" => ModelInput()

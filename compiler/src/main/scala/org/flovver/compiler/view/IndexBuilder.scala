@@ -1,6 +1,6 @@
-package org.flovver.compiler.passes
+package org.flovver.compiler.view
 
-import org.flovver.compiler.ir.Payload.View
+import org.flovver.compiler.frontend.Payload.View
 import org.flovver.std.widgets.Widgets
 
 import java.io.{File, PrintWriter}

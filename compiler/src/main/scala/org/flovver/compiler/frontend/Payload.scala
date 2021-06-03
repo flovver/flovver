@@ -1,6 +1,6 @@
-package org.flovver.compiler.ir
+package org.flovver.compiler.frontend
 
-import org.flovver.compiler.ir.Payload.Node.Definition
+import org.flovver.compiler.frontend.Payload.Node.Definition
 
 object Payload {
   /**
