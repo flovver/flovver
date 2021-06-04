@@ -47,3 +47,18 @@ object RecursiveCall {
     case _ => None
   }
 }
+
+object ModelInput extends Node {
+  override val arity: Int = 0
+  label = Some("model")
+}
+
+object MessageInput extends Node {
+  override val arity: Int = 0
+  label = Some("message")
+}
+
+object ModelOutput extends Node with Abstraction {
+  override val arity: Int = 1
+  override var outLink: Option[Link with InternalOutput] = None
+}

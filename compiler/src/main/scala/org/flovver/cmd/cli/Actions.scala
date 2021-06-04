@@ -15,7 +15,7 @@ object Actions {
     val projectDirectoryIsCreated = projectDirectory.mkdir()
 
     if (projectDirectoryIsCreated) {
-      Seq("model", "view", "update", "project")
+      Seq("project")
         .map(_ + ".json")
         .foreach { fileName =>
           new File(project + File.separator + fileName).createNewFile()
@@ -24,6 +24,6 @@ object Actions {
   }
 
   def launchIde(folder: String): Unit = {
-    FlovverServer.run()
+    FlovverServer.run(folder)
   }
 }

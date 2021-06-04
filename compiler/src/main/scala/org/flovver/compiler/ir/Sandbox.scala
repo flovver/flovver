@@ -6,6 +6,15 @@ trait Sandbox {
   val links: mutable.Buffer[Link] = mutable.Buffer()
   val nodes: mutable.Buffer[Node] = mutable.Buffer()
 
+  val modelInput: Node = ModelInput
+  val messageInput: Node = MessageInput
+  val modelOutput: Node with Abstraction = ModelOutput
+
+  def addNode[N <: Node](n: N): N = {
+    nodes.append(n)
+    n
+  }
+
   // external
   // a <- Link(defNode, useNode, useArg, isValue=byValue, external)
   // useNode.links(useArg) = a
