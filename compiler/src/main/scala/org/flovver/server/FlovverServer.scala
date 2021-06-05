@@ -1,14 +1,16 @@
 package org.flovver.server
 
+import org.eclipse.jetty.server.handler.{ContextHandler, HandlerList, ResourceHandler}
 import org.eclipse.jetty.server.{Server, ServerConnector}
-import org.eclipse.jetty.servlet.DefaultServlet
+import org.eclipse.jetty.servlet.{DefaultServlet, ServletHolder}
 import org.eclipse.jetty.webapp.WebAppContext
 
 import java.awt.Desktop
+import java.io.File
 import java.net.URI
 
 object FlovverServer {
-  def run(): Unit = {
+  def run(folder: String): Unit = {
     // We request random available port from the system by passing zero value to the server constructor
     val port = 0
 
@@ -20,10 +22,17 @@ object FlovverServer {
     val publicResourcePath = classOf[FlovverServlet].getClassLoader.getResource("public").toExternalForm
     context.setResourceBase(publicResourcePath)
 
-    context.addServlet(classOf[FlovverServlet], "/api/*")
+    context.addServlet(new ServletHolder(new FlovverServlet(folder)), "/api/*")
     context.addServlet(classOf[DefaultServlet], "/")
 
-    server.setHandler(context)
+    val previewContext = new ContextHandler("/preview")
+    previewContext.setHandler({
+      val h = new ResourceHandler
+      h.setResourceBase(folder + File.separator + "out")
+      h
+    })
+
+    server.setHandler(new HandlerList(previewContext, context))
 
     server.start()
 
