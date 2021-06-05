@@ -1,7 +1,11 @@
 <script lang="ts">
     import { makeDnD } from "../../common/dnd-util";
+    import Port from "./Port.svelte";
 
     export let title: string;
+
+    export let viewportOffsetX: number = 0;
+    export let viewportOffsetY: number = 0;
 
     export let x: number;
     export let y: number;
@@ -32,38 +36,61 @@
         x += e.movementX;
         y += e.movementY;
     });
+
+    export let deleteAction;
+    function deleteThis(e) {
+        e.preventDefault();
+        if (window.confirm(`Delete function "${title}"?`)) {
+            deleteAction();
+        }
+        return false;
+    }
 </script>
 
 <svelte:window on:mouseup={onMouseUp} on:mousemove={onMouseMove} />
 
 <div
+    class="fixed text-sm italic"
+    style="left: {viewportOffsetX + x}px; top: {viewportOffsetY + y - 24}px;"
+>
+    ({inputs.length > 0 ? inputs.reduce((a, b, _) => a + ", " + b) : ""}) -> {output}
+</div>
+<div
     bind:this={element}
     on:mousedown={onMouseDown}
+    on:contextmenu={deleteThis}
     class="fixed cursor-move bg-white shadow rounded px-8 py-2"
-    style="left: {x}px; top: {y}px; height: {height}px;"
+    style="left: {viewportOffsetX + x}px; top: {viewportOffsetY +
+        y}px; height: {height}px;"
 >
     <div class="italic" style="margin-top: {height / 2 - 20}px;">{title}</div>
 </div>
 {#each inputs as _, i}
-    <div
-        class="fixed bg-gray-50 border-gray-400 border-2 rounded-full w-3 h-3"
-        style="left: {x - 6}px; top: {y + inputStartY + inputGap * i - 6}px;"
+    <Port
+        x={viewportOffsetX + x - 6}
+        y={viewportOffsetY + y + inputStartY + inputGap * i - 6}
+        type="input"
     />
 {/each}
-<div
-    class="fixed bg-gray-50 border-gray-400 border-2 rounded-full w-3 h-3"
-    style="left: {x + width - 6}px; top: {y + height / 2 - 6}px;"
+<Port
+    x={viewportOffsetX + x + width - 6}
+    y={viewportOffsetY + y + height / 2 - 6}
+    type="output"
 />
 <svg
     class="fixed text-gray-500 h-2 top-full"
-    style="left: {x + width / 2}px; top: {y + height}px"
+    style="left: {viewportOffsetX + x + width / 2}px; top: {viewportOffsetY +
+        y +
+        height}px"
     x="0px"
     y="0px"
     viewBox="0 0 255 255"
     xml:space="preserve"
     ><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg
 >
-<div
-    class="fixed hover:bg-gray-50 border-gray-400 hover:border-2 hover:rounded-full w-3 h-3"
-    style="left: {x + width / 2}px; top: {y + height - 6}px"
+<Port
+    x={viewportOffsetX + x + width / 2}
+    y={viewportOffsetY + y + height - 6}
+    hideable={true}
+    type="output"
 />
