@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
 
 enablePlugins(JettyPlugin)
 
-lazy val buildIde = taskKey[Unit]("build IDE and copy to resources")
+lazy val buildIde = taskKey[Seq[File]]("build IDE and copy to resources")
 
 buildIde := {
   val executeNpmBuild = false
@@ -28,12 +28,20 @@ buildIde := {
   val buildCode = if (executeNpmBuild) "npm run build --prefix ..//ide".! else 0
 
   if (buildCode == 0) IO.copyDirectory(file("..//ide//public"), (Compile / resourceManaged).value / "public")
+
+  def tree(f: File): Array[File] = {
+    val files = IO.listFiles(f)
+
+    files ++ files.filter(_.isDirectory).flatMap(tree)
+  }
+
+  tree((Compile / resourceManaged).value / "public").toSeq
 }
+
+Compile / resourceGenerators += buildIde.taskValue
 
 lazy val app = (project in file("."))
   .settings(
-    Compile / resourceGenerators += Def.task(Seq()).dependsOn(buildIde).taskValue,
-
     assembly / mainClass := Some("org.flovver.cmd.Launcher"),
     assembly / assemblyJarName := "flovver.jar",
     assembly / test := {}
