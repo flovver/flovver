@@ -23,6 +23,7 @@ class FlovverServlet(val folder: String) extends ScalatraServlet {
   }
 
   post("/save") {
+    println(request.body)
     "save"
   }
 

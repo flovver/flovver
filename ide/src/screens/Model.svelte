@@ -5,36 +5,46 @@
     import { typeList, typesByName } from "./model/types/types";
     import Workspace from "./model/Workspace.svelte";
     import Properties from "./model/Properties.svelte";
+    import { state } from "./common/global-state";
 
     export let model;
 
-    let types = model.types.map((v, i, a) =>
-        Object.create({
-            name: v.alias,
-            baseType: v.base,
-            x: v.x,
-            y: v.y,
-            component: typesByName[v.base],
-            deleteAction: (i) => {
-                types.splice(i, 1);
-                types = types;
-                setCurrentType(null);
-            },
-            model: model["model-type"] == v.alias,
-            setModel: (i) => {
-                types.forEach((v, i, a) => (v.model = false));
-                types[i].model = true;
-            },
-            message: model["message-type"] == v.alias,
-            setMessage: (i) => {
-                types.forEach((v, i, a) => (v.message = false));
-                types[i].message = true;
-            },
-            variants: v?.variants?.map((vv, ii, aa) =>
-                Object.create({ name: vv.name, baseType: vv.type })
-            ),
-        })
-    );
+    let types = model.types.map((v, i, a) => ({
+        name: v.alias,
+        baseType: v.base,
+        x: v.x,
+        y: v.y,
+        component: typesByName[v.base],
+        deleteAction: (i) => {
+            types.splice(i, 1);
+            types = types;
+            setCurrentType(null);
+        },
+        model: model["model-type"] == v.alias,
+        setModel: (i) => {
+            types.forEach((v, i, a) => (v.model = false));
+            types[i].model = true;
+        },
+        message: model["message-type"] == v.alias,
+        setMessage: (i) => {
+            types.forEach((v, i, a) => (v.message = false));
+            types[i].message = true;
+        },
+        variants: v?.variants?.map((vv, ii, aa) => ({
+            name: vv.name,
+            baseType: vv.type,
+        })),
+    }));
+
+    $: {
+        state.update((v) => {
+            if (!v.model) {
+                v.model = {};
+            }
+            v.model.types = types;
+            return v;
+        });
+    }
 
     let currentType;
     let setCurrentType;

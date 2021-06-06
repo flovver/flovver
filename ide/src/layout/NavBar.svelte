@@ -37,9 +37,48 @@
   });
 
   async function shutDownSession() {
-    await fetch('/api/stop').finally(() => window.close());
+    if (window.confirm('Do you really want to shut down IDE session?')) {
+      await fetch('/api/stop').finally(() => window.close());
+    }
+  }
+
+  export let saveProject;
+
+  async function buildProject() {}
+
+  async function runProject() {}
+
+  let lastKeyX = false;
+
+  async function hotkeys(e: KeyboardEvent) {
+    if (e.key == 'x') {
+      if (lastKeyX) {
+        lastKeyX = false;
+        return await shutDownSession();
+      } else {
+        lastKeyX = true;
+      }
+    } else {
+      lastKeyX = false;
+    }
+
+    switch (e.key) {
+      case 'b':
+        await buildProject();  
+        break;
+    
+      case 'r':
+        await runProject();
+        break;
+
+      case 'p':
+        currentScreen = "settings";
+        break;
+    }
   }
 </script>
+
+<svelte:window on:keydown={hotkeys} />
 
 <nav class="fixed w-full z-50 bg-gray-800">
     <div class="mx-auto px-0">
@@ -68,10 +107,14 @@
         </div>
         <div class="md:block">
             <div class="flex">
-                <button title="Build" class="flex-shrink-0 px-3 hover:bg-gray-900 text-gray-300 hover:text-white focus:outline-none">
+                <button
+                  on:click={buildProject}
+                  title="Build" class="flex-shrink-0 px-3 hover:bg-gray-900 text-gray-300 hover:text-white focus:outline-none">
                     <Hammer/>
                 </button>
-                <button title="Run" class="flex-shrink-0 px-3 hover:bg-gray-900 text-gray-300 hover:text-white focus:outline-none">
+                <button
+                  on:click={runProject}
+                  title="Run" class="flex-shrink-0 px-3 hover:bg-gray-900 text-gray-300 hover:text-white focus:outline-none">
                     <Play/>
                 </button>
                 <button 
@@ -88,13 +131,17 @@
                     {#if menu.show}
                       <div class="origin-top-right z-50 absolute right-2 mt-2 w-56 shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y focus:outline-none">
                         <div class="py-1" role="none">
-                          <button class="block px-4 py-2 w-full text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none">
+                          <button
+                            on:click={buildProject}
+                            class="block px-4 py-2 w-full text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none">
                             <div class="flex justify-between">
                               <div>Build</div>
                               <div class="text-gray-400">b</div>
                             </div>
                           </button>
-                          <button class="block px-4 py-2 w-full text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none">
+                          <button
+                            on:click={runProject}
+                            class="block px-4 py-2 w-full text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none">
                             <div class="flex justify-between">
                               <div>Run</div>
                               <div class="text-gray-400">r</div>

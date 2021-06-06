@@ -1,13 +1,31 @@
 <script lang="ts">
   import CheckBox from "./settings/CheckBox.svelte";
+  import { state } from './common/global-state';
 
   export let currentScreen;
 
+  export let projectName;
   export let flags;
 
   export let useTailCallElimination = flags["tail-call-elimination"];
   export let useFibonacciElimination = flags["fibonacci-elimination"];
   export let useCommonRecursionMemoization = flags["common-recursion-memoization"];
+
+  $: {
+    state.update((v) => {
+        if (!v.compilerFlags) {
+          v.compilerFlags = {};
+        }
+        if (!v.project) {
+          v.project = {};
+        }
+        v.project.name = projectName;
+        v.compilerFlags.tail = useTailCallElimination;
+        v.compilerFlags.fib = useFibonacciElimination;
+        v.compilerFlags.memoization = useCommonRecursionMemoization;
+        return v;
+    });
+  }
 
   let tailCall = useTailCallElimination;
   let fibonacci = useFibonacciElimination;

@@ -2,6 +2,7 @@
     import { makeDnD } from "../common/dnd-util";
     import { widgetsByName } from "./widgets/widgets";
     import Pane from "./Pane.svelte";
+    import { state } from "../common/global-state";
 
     export let view;
 
@@ -24,7 +25,8 @@
         screen.height = window.innerHeight;
     });
 
-    let widgets: any[] = view.widgets.map((v, i, a) => Object.create({
+    let widgets: any[] = view.widgets.map((v, i, a) => ({
+        type: v.type,
         caption: v.caption,
         x: v.x,
         y: v.y,
@@ -33,11 +35,23 @@
             widgets.splice(i, 1);
             widgets = widgets;
             setCurrentWidget(null);
-        }
+        },
     }));
+
+    $: {
+        state.update((v) => {
+            if (!v.view) {
+                v.view = {};
+            }
+            v.view.pane = pane;
+            v.view.widgets = widgets;
+            return v;
+        });
+    }
 
     function addWidget(name: string, e: DragEvent) {
         widgets.push({
+            type: name,
             caption: name,
             x: e.clientX - viewportOffsetX,
             y: e.clientY - viewportOffsetY,
