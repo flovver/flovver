@@ -5,11 +5,13 @@
     import DefineSetItem from "./update/defines/DefineSetItem.svelte";
     import { primitivesList, functions } from "./update/nodes/nodes";
 
+    export let update;
+
     export let currentScreen;
 </script>
 
 <div class={currentScreen == "update" ? "visible" : "invisible"}>
-    <Workspace />
+    <Workspace {update} />
 
     <SideBar title="Functions" position="left">
         <DefineSet>

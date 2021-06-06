@@ -5,6 +5,9 @@
 
     import { addItem } from "./nodes";
 
+    export let outerItems;
+    export let refreshOuterItems;
+
     export let data;
 
     export let viewportOffsetX: number = 0;
@@ -35,7 +38,7 @@
             item.x += e.movementX;
             item.y += e.movementY;
         });
-        items = items;
+        refreshOuterItems();
 
         target = null;
     });
@@ -58,14 +61,10 @@
             items,
             e.dataTransfer.getData("defName"),
             e.clientX - viewportOffsetX,
-            e.clientY - viewportOffsetY
+            e.clientY - viewportOffsetY,
+            outerItems
         );
-        items = items;
-    }
-
-    function deleteItem(i: number) {
-        items.splice(i, 1);
-        items = items;
+        refreshOuterItems();
     }
 
     export let deleteAction;
@@ -147,19 +146,3 @@
         height = height > 0 ? height : 0;
     }}
 />
-
-{#each items as item, i}
-    <svelte:component
-        this={item.component}
-        deleteAction={() => deleteItem(i)}
-        bind:x={item.x}
-        bind:y={item.y}
-        bind:title={item.title}
-        bind:inputs={item.inputs}
-        bind:output={item.output}
-        bind:width={item.width}
-        bind:heigth={item.height}
-        bind:viewportOffsetX
-        bind:viewportOffsetY
-    />
-{/each}

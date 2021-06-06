@@ -1,13 +1,28 @@
+import Endpoint from './Endpoint.svelte';
 import FunctionDefinition from './FunctionDefinition.svelte';
 import FunctionCall from './FunctionCall.svelte';
 
 export const primitivesList = ['Definition', 'self'];
 
 export const functions = {
-    'If': { inputs: ["Bool", "() -> Int", "() -> Int"], output: "Int" }
+    'If': { inputs: ["Bool", "() -> A", "() -> A"], output: "A" },
+    'Eq': { inputs: ["A", "A"], output: "Bool" },
+    "Mul": { inputs: ["Number", "Number"], output: "Number" },
+    "Num1": { inputs: [], output: "Number" },
+    "StrToNum": { inputs: ["String"], output: "Number" },
+    "Minus1": { inputs: ["Number"], output: "Number" }
 };
 
-export function addItem(destination: "screen" | "definition", data: any, items: any[], name: string, x: number, y: number) {
+export const componentsByType = {
+    'model-input': Endpoint,
+    'message-input': Endpoint,
+    'definition': FunctionDefinition,
+    'call': FunctionCall,
+    'recursive-call': FunctionCall,
+    'model-output': Endpoint,
+};
+
+export function addItem(destination: "screen" | "definition", data: any, items: any[], name: string, x: number, y: number, outerItems: any[] = null) {
     // guards
     if (destination == "screen") {
         if (name == "self") return;
@@ -24,34 +39,49 @@ export function addItem(destination: "screen" | "definition", data: any, items: 
         const inputs = types[0].length == 2 ? [] : types[0].substr(1, types[0].length - 2).split(',');
         const output = types[1];
 
-        items.push({
+        const item: any = {
             component: FunctionDefinition,
+            type: 'definition',
             inputs: inputs,
             output: output,
             x: x,
             y: y,
             width: 200,
             height: 100,
-        });
+        };
+        if (outerItems) item.parent = data;
+
+        outerItems?.push(item);
+        items.push(item);
     } else if (name == "self") {
-        items.push({
+        const item: any = {
             component: FunctionCall,
             title: 'self',
+            type: 'recursive-call',
             inputs: [...data.inputs],
             output: data.output,
             x: x,
             y: y,
-        });
+        };
+        if (outerItems) item.parent = data;
+
+        outerItems?.push(item);
+        items.push(item);
     } else {
         const fn = functions[name];
 
-        items.push({
+        const item: any = {
             component: FunctionCall,
             title: name,
+            type: 'call',
             inputs: fn.inputs,
             output: fn.output,
             x: x,
             y: y,
-        })
+        };
+        if (outerItems) item.parent = data;
+
+        outerItems?.push(item);
+        items.push(item);
     }
 }

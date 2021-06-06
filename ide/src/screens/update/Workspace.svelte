@@ -1,10 +1,12 @@
 <script lang="ts">
     import { makeDnD } from "../common/dnd-util";
 
-    import Endpoint from "./nodes/Endpoint.svelte";
     import Connections from "./Connections.svelte";
 
-    import { addItem } from "./nodes/nodes";
+    import { addItem, componentsByType } from "./nodes/nodes";
+    import { state } from "../common/global-state";
+
+    export let update;
 
     let viewportOffsetX: number = 0;
     let viewportOffsetY: number = 0;
@@ -14,7 +16,48 @@
         viewportOffsetY += e.movementY;
     });
 
-    export let items = [];
+    export let items: any[] = update.nodes
+        .map((v, i, a) => {
+            const r: any = {
+                component: componentsByType[v.type],
+                type: v.type,
+                inputs: v.inputs,
+                output: v.output,
+                x: v.x,
+                y: v.y,
+            };
+            if (v.name) r.title = v.name;
+            if (v.width) r.width = v.width;
+            if (v.height) r.height = v.height;
+            if (v.parent) r.parent = v.parent;
+            if (v.type == "definition") r.items = [];
+            return r;
+        })
+        .map((v, i, a) => {
+            if (v.parent) {
+                const j = v.parent;
+                v.parent = a[j];
+                a[j].items.push(v);
+            }
+            return v;
+        });
+
+    $: {
+        state.update((v) => {
+            if (!v.update) {
+                v.update = {};
+            }
+            if (!v.update.nodes) {
+                v.update.nodes = {};
+            }
+            v.update.nodes = items;
+            return v;
+        });
+    }
+
+    function refreshItems() {
+        items = items;
+    }
 
     let isDragHovered = false;
 
@@ -32,8 +75,11 @@
     }
 
     function deleteItem(i: number) {
-        items.splice(i, 1);
-        items = items;
+        const item = items.splice(i, 1)[0];
+        items =
+            item.type == "definition"
+                ? items.filter((v, i, a) => v.parent != item)
+                : items;
     }
 </script>
 
@@ -54,33 +100,13 @@
 
 <Connections />
 
-<Endpoint
-    x={500}
-    y={200}
-    title="Model"
-    bind:viewportOffsetX
-    bind:viewportOffsetY
-/>
-<Endpoint
-    x={480}
-    y={600}
-    title="Message"
-    bind:viewportOffsetX
-    bind:viewportOffsetY
-/>
-<Endpoint
-    x={1200}
-    y={400}
-    title="View"
-    type="input"
-    bind:viewportOffsetX
-    bind:viewportOffsetY
-/>
-
 {#each items as item, i}
     <svelte:component
         this={item.component}
         deleteAction={() => deleteItem(i)}
+        refreshOuterItems={refreshItems}
+        bind:items={item.items}
+        bind:outerItems={items}
         bind:data={item}
         bind:x={item.x}
         bind:y={item.y}
@@ -88,7 +114,7 @@
         bind:inputs={item.inputs}
         bind:output={item.output}
         bind:width={item.width}
-        bind:heigth={item.height}
+        bind:height={item.height}
         bind:viewportOffsetX
         bind:viewportOffsetY
     />

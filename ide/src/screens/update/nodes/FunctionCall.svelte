@@ -2,6 +2,8 @@
     import { makeDnD } from "../../common/dnd-util";
     import Port from "./Port.svelte";
 
+    export let data;
+
     export let title: string;
 
     export let viewportOffsetX: number = 0;

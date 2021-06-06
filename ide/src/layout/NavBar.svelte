@@ -46,7 +46,9 @@
 
   async function buildProject() {}
 
-  async function runProject() {}
+  async function runProject() {
+    await saveProject();
+  }
 
   let lastKeyX = false;
 

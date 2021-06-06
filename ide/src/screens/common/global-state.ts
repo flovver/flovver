@@ -32,6 +32,23 @@ export function renderProjectJson(st: any): string {
             })
         },
         view: st.view,
+        update: {
+            nodes: st.update.nodes.map((v, i, a) => {
+                const r: any = ({
+                    type: v.type,
+                    inputs: v.inputs,
+                    output: v.output,
+                    x: v.x,
+                    y: v.y,
+                });
+                if (v.title) r.name = v.title;
+                if (v.width) r.width = v.width;
+                if (v.height) r.height = v.height;
+                if (v.parent) r.parent = a.indexOf(v.parent);
+                return r;
+            }),
+            relationships: []
+        }
     };
     return JSON.stringify(p);
 }

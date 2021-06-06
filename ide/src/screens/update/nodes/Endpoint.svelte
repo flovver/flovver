@@ -2,8 +2,10 @@
     import { makeDnD } from "../../common/dnd-util";
     import Port from "./Port.svelte";
 
+    export let data;
+
     export let title: string;
-    export let type: "input" | "output" = "output";
+    export let type: "input" | "output" = data.type == "model-output" ? "input" : "output";
 
     export let viewportOffsetX: number = 0;
     export let viewportOffsetY: number = 0;

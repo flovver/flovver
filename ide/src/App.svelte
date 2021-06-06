@@ -51,7 +51,7 @@
 
 	<main class="select-none">
 		<Model model={d.model} bind:currentScreen />
-		<Update bind:currentScreen />
+		<Update update={d.update} bind:currentScreen />
 		<View view={d.view} bind:currentScreen />
 		<Settings
 			projectName={d.project.name}
