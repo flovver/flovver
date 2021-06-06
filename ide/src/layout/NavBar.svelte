@@ -35,6 +35,10 @@
       document.removeEventListener('keyup', handleEscape, false);
     };
   });
+
+  async function shutDownSession() {
+    await fetch('/api/stop').finally(() => window.close());
+  }
 </script>
 
 <nav class="fixed w-full z-50 bg-gray-800">
@@ -106,7 +110,9 @@
                           </button>
                         </div>
                         <div class="py-1" role="none">
-                          <button class="block px-4 py-2 w-full text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none">
+                          <button 
+                            on:click={shutDownSession}
+                            class="block px-4 py-2 w-full text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none">
                             <div class="flex justify-between">
                               <div>Shut down IDE session</div>
                               <div class="text-gray-400">x-x</div>

@@ -6,21 +6,27 @@
     import Workspace from "./view/Workspace.svelte";
     import Properties from "./view/Properties.svelte";
 
+    export let view;
+
     let currentWidget;
+
+    export let currentScreen;
 </script>
 
-<Workspace bind:currentWidget />
+<div class={currentScreen == "view" ? "visible" : "invisible"}>
+    <Workspace {view} bind:currentWidget />
 
-<SideBar title="Widgets" position="left">
-    <WidgetSet>
-        {#each widgetList as widget}
-            <WidgetSetItem title={widget.title}>
-                <svelte:component this={widget.icon} slot="icon" />
-            </WidgetSetItem>
-        {/each}
-    </WidgetSet>
-</SideBar>
+    <SideBar title="Widgets" position="left">
+        <WidgetSet>
+            {#each widgetList as widget}
+                <WidgetSetItem title={widget.title}>
+                    <svelte:component this={widget.icon} slot="icon" />
+                </WidgetSetItem>
+            {/each}
+        </WidgetSet>
+    </SideBar>
 
-<SideBar title="Properties" position="right">
-    <Properties bind:currentWidget />
-</SideBar>
+    <SideBar title="Properties" position="right">
+        <Properties bind:currentWidget />
+    </SideBar>
+</div>

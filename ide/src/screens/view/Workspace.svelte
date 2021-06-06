@@ -3,6 +3,8 @@
     import { widgetsByName } from "./widgets/widgets";
     import Pane from "./Pane.svelte";
 
+    export let view;
+
     let viewportOffsetX: number = 0;
     let viewportOffsetY: number = 0;
 
@@ -12,7 +14,7 @@
     });
 
     const screen = { width: window.innerWidth, height: window.innerHeight };
-    const pane = { width: 800, height: 600 };
+    const pane = { width: view.pane.width, height: view.pane.height };
 
     $: viewportOffsetX = (screen.width - pane.width) / 2;
     $: viewportOffsetY = (screen.height - pane.height) / 2;
@@ -22,7 +24,17 @@
         screen.height = window.innerHeight;
     });
 
-    let widgets = [];
+    let widgets: any[] = view.widgets.map((v, i, a) => Object.create({
+        caption: v.caption,
+        x: v.x,
+        y: v.y,
+        component: widgetsByName[v.type],
+        deleteAction: (i) => {
+            widgets.splice(i, 1);
+            widgets = widgets;
+            setCurrentWidget(null);
+        }
+    }));
 
     function addWidget(name: string, e: DragEvent) {
         widgets.push({

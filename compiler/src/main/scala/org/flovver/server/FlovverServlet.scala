@@ -25,4 +25,9 @@ class FlovverServlet(val folder: String) extends ScalatraServlet {
   post("/save") {
     "save"
   }
+
+  get("/stop") {
+    println("Shutting down Flovver IDE...")
+    System.exit(1)
+  }
 }

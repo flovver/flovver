@@ -10,9 +10,9 @@
         viewportOffsetY += e.movementY;
     });
 
-    export let types = [];
+    export let types: any[];
 
-    let typeCounter = 1;
+    let typeCounter = types.length + 1;
 
     function addType(name: string, e: DragEvent) {
         types.push({
@@ -36,6 +36,7 @@
                 types.forEach((v, i, a) => (v.message = false));
                 types[i].message = true;
             },
+            variants: name == 'Variant' ? [ { name: 'Var1', baseType: 'Unit' } ] : null,
         });
 
         types = types;
@@ -50,7 +51,7 @@
 
     export let currentType;
 
-    function setCurrentType(t: any) {
+    export function setCurrentType(t: any) {
         currentType = t;
     }
 </script>
@@ -85,6 +86,7 @@
         setMessage={() => t.setMessage(i)}
         bind:x={t.x}
         bind:y={t.y}
+        bind:variants={t.variants}
         bind:viewportOffsetX
         bind:viewportOffsetY
     />
