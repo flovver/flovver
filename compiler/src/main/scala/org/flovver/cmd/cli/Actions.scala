@@ -1,6 +1,7 @@
 package org.flovver.cmd.cli
 
 import org.flovver.server.FlovverServer
+import org.flovver.compiler
 
 import java.io.File
 
@@ -25,5 +26,9 @@ object Actions {
 
   def launchIde(folder: String): Unit = {
     FlovverServer.run(folder)
+  }
+
+  def buildProject(folder: String): Unit = {
+    new compiler.Compiler(folder)
   }
 }

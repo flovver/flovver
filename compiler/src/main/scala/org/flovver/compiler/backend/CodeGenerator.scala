@@ -7,7 +7,8 @@ import org.flovver.compiler.ir.{Abstraction, Application, Call, Definition, Inte
 import java.io.{File, PrintWriter}
 import scala.collection.mutable
 
-trait CodeGenerator { this: Sandbox with Env with PayloadProvider =>
+trait CodeGenerator {
+  this: Sandbox with Env with PayloadProvider =>
 
   private val nextLabel = {
     var i = 1
@@ -46,27 +47,28 @@ trait CodeGenerator { this: Sandbox with Env with PayloadProvider =>
     nodes.appendAll(sortedNodes.reverseIterator)
   }
 
-  def generateArg(label: String)(v: (Link, Int)): String = {
-    val (link: Link, i: Int) = v
+  def generateArg(label: String, substitute: Boolean = false)(v: (Link, Int)): String = {
+    val link = v._1
+    val i = v._2
 
     val name = link match {
       case null => s"${label}_arg_$i"
       case InternalParameter(defNode, parameter, _, _) =>
         defNode match {
-          case v: Application if v.incomeLinks(parameter) != null => v.arg(parameter).label
+          case v: Application if substitute && v.incomeLinks(parameter) != null => v.arg(parameter).label.get
           case _ => s"${defNode.label.get}_arg_$parameter"
         }
       case Link(defNode, _, _) => defNode.label.get
     }
 
-    val isInputLink = link.`def` == modelInput || link.`def` == messageInput
-    val callPolicy = if (link != null && link.isExternal && link.isValue && !isInputLink) "()" else ""
+    val isNotInputLink = link != null && !(link.`def` == modelInput || link.`def` == messageInput)
+    val callPolicy = if (link != null && link.isExternal && link.isValue && isNotInputLink) "()" else ""
 
     s"$name$callPolicy"
   }
 
   def generateRecursiveCall(label: String)(abstraction: Node with Abstraction, args: mutable.Seq[Link]): Unit = {
-    val self = abstraction.label.get
+    val self = s"${abstraction.label.get}_r"
 
     val parameters = args.zipWithIndex.filter(_._1 == null).map(v => s"${label}_arg_${v._2}").mkString(",")
     val arguments = args.zipWithIndex.map(generateArg(label)).mkString(",")
@@ -82,16 +84,19 @@ trait CodeGenerator { this: Sandbox with Env with PayloadProvider =>
   }
 
   def generateDefinitionStart(label: String)(args: mutable.Seq[Link]): Unit = {
-    val parameters = args.zipWithIndex.filter(_._1 == null).map(v => s"${label}_arg_${v._2}").mkString(",")
+    val arguments = args.zipWithIndex.filter(_._1 == null).map(v => s"${label}_arg_${v._2}").mkString(",")
+    val parameters = args.zipWithIndex.map(v => s"${label}_arg_${v._2}").mkString(",")
 
     if (Env.useCommonRecursionMemoization) {
       result.println(
-        s"""const $label = (() => {
+        s"""const $label = ($arguments) => {
+           |const ${label}_r = (() => {
            |const ${label}_st = {};
-           |
            |const ${label}_w = ($parameters) => {""".stripMargin)
     } else {
-      result.println(s"const $label = ($parameters) => {")
+      result.println(
+        s"""const $label = ($arguments) => {
+           |const ${label}_r = ($parameters) => {""".stripMargin)
     }
   }
 
@@ -100,7 +105,7 @@ trait CodeGenerator { this: Sandbox with Env with PayloadProvider =>
   }
 
   def generateUpdateFunctionBody(): Unit = {
-    val definitionEnds = mutable.Stack[(String, mutable.Seq[Link], Node)]()
+    val definitionEnds = mutable.Stack[(String, mutable.Seq[Link], Node, Link)]()
 
     for (node <- nodes) {
 
@@ -113,31 +118,48 @@ trait CodeGenerator { this: Sandbox with Env with PayloadProvider =>
         case RecursiveCall(abstraction, args) => generateRecursiveCall(label)(abstraction, args)
         case Call(name, args) => generateCall(label)(name, args)
         case Definition(args, output) =>
-          definitionEnds.push((label, args, output.map(_.`def`).get))
+          definitionEnds.push((label, args, output.map(_.`def`).get, output.get))
           generateDefinitionStart(label)(args)
         case ModelInput | MessageInput | ModelOutput =>
         case _ => throw new IllegalStateException()
       }
 
       if (definitionEnds.headOption.exists(_._3 == node)) {
-        result.println(s"return ${node.label.get}();\n}")
+        val (label, args, _, link) = definitionEnds.pop()
 
-        val (label, args, _) = definitionEnds.pop()
+        val memoizationWrapper = if (Env.useCommonRecursionMemoization) {
+          val parameters = args.zipWithIndex.map(v => s"${label}_arg_${v._2}").mkString(",")
+          s"""
+             |return ($parameters) => ${label}_st[[$parameters]] = ${label}_st[[$parameters]] || ${label}_w($parameters);
+             |})();""".stripMargin
+        } else ""
 
-        if (Env.useCommonRecursionMemoization) {
-          val parameters = args.zipWithIndex.filter(_._1 == null).map(v => s"${label}_arg_${v._2}").mkString(",")
-          result.println(s"return ($parameters) => ${label}_st[[$parameters]] = ${label}_st[[$parameters]] || ${label}_w($parameters);\n})();")
-        }
+        result.println(
+          s"""return ${node.label.get}${if (link.isValue) "()" else ""};
+             |}$memoizationWrapper
+             |return ${label}_r(${args.zipWithIndex.map(generateArg(label)).mkString(",")});
+             |}""".stripMargin)
       }
 
     }
   }
 
   def generateUpdateFunctionEnd(): Unit = {
-    result.println(s"return ${modelOutput.outArg.get.label.get};\n}")
+    result.println(
+      s"""return ${modelOutput.outArg.flatMap(_.label).getOrElse("model")}${if (modelOutput.outLink.exists(_.isValue)) "()" else ""};
+         |}""".stripMargin)
   }
 
-  def generateStdLibFootprint(): Unit = {}
+  def generateStdLibFootprint(): Unit = {
+    result.println(
+      """const If = (c, l, r) => c ? l() : r();
+        |const Eq = (x, y) => x == y;
+        |const Mul = (x, y) => x * y;
+        |const Num1 = () => 1;
+        |const StrToNum = (x) => x;
+        |const Minus1 = (x) => x - 1;
+        |""".stripMargin)
+  }
 
   def generateRuntimeFootprint(): Unit = {
     result.println(

@@ -19,7 +19,7 @@ trait IndexBuilder { this: Env with PayloadProvider =>
 
     val template =
       s"""<!doctype html>
-         |<html>inde
+         |<html>
          |<head>
          |  <meta charset="UTF-8" />
          |  <meta name="viewport" content="width=device-width, initial-scale=1.0" />

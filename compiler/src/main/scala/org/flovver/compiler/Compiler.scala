@@ -29,7 +29,7 @@ class Compiler(folder: String) extends Env with PayloadParser with Sandbox with 
 
   createOutDirectory()
 
-  generate()
   buildIndex()
+  generate()
 
 }
