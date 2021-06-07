@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
   "ch.qos.logback"          %  "logback-classic"    % "1.2.3"            % Compile,
   "org.eclipse.jetty"       %  "jetty-webapp"       % "9.4.35.v20201120" % Compile,
   "javax.servlet"           %  "javax.servlet-api"  % "3.1.0"            % Provided,
-  "org.json4s"              % "json4s-jackson_2.13" % "3.7.0-RC1"        % Provided,
+  "org.json4s"              % "json4s-jackson_2.13" % "3.7.0-RC1"        % Compile,
 )
 
 enablePlugins(JettyPlugin)
@@ -44,5 +44,9 @@ lazy val app = (project in file("."))
   .settings(
     assembly / mainClass := Some("org.flovver.cmd.Launcher"),
     assembly / assemblyJarName := "flovver.jar",
-    assembly / test := {}
+    assembly / test := {},
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+      case _ => MergeStrategy.first
+    }
   )
