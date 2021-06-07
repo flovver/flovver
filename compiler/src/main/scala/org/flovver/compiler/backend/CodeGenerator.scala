@@ -158,17 +158,56 @@ trait CodeGenerator {
         |const Num1 = () => 1;
         |const StrToNum = (x) => x;
         |const Minus1 = (x) => x - 1;
+        |const DispatchFactorial = (msg, NewInput, ComputeFactorial) => msg.tag == 'NewInput' ? NewInput(msg.value) : ComputeFactorial();
         |""".stripMargin)
   }
 
   def generateRuntimeFootprint(): Unit = {
+    val widgets = payload.view.widgets
+      .zipWithIndex
+      .map { case (w, i) => s"{ id: 'view_$i', caption_template: '${w.caption}' }" }
+      .mkString(",\n")
+
     result.println(
-      """let model = {};
-        |
-        |const signal = (message) => {
-        |model = update(model, message);
-        |}
-        |""".stripMargin)
+      s"""let model = 1;
+         |
+         |const interpolationRegExp = /\\${"$"}{[a-zA-Z]+}/g;
+         |const interpolate = (str) => {
+         |const matches = str.match(interpolationRegExp);
+         |if (matches == null) return str;
+         |const substitutions = matches.map((v, i, a) => eval(v.substr(2, v.length - 3)));
+         |let result = str;
+         |matches.forEach((v, i, a) => (result = result.replace(v, substitutions[i])));
+         |return result;
+         |}
+         |
+         |const refreshView = () => view.forEach((v, i, a) => {
+         |const element = document.getElementById(v.id);
+         |const value = interpolate(v.caption_template)
+         |if (element.tagName == 'DIV') {
+         |element.innerText = value;
+         |} else {
+         |element.value = value;
+         |}
+         |});
+         |
+         |const signal = (message) => {
+         |model = update(model, message);
+         |refreshView();
+         |}
+         |
+         |const view = [
+         |$widgets
+         |];
+         |
+         |window.onload = () => {
+         |refreshView();
+         |${
+        if (payload.compiler.flags.debug)
+          s"""const debugWindow = new WinBox("Debug", {html: `<pre>const update = ${"$"}{update.toString()}</pre>`});
+             |debugWindow.minimize();""".stripMargin else ""
+      }
+         |}""".stripMargin)
   }
 
   def generate(): Unit = {

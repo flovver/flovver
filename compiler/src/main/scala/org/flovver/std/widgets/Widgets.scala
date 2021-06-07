@@ -9,53 +9,60 @@ object Widgets {
   /**
    * Виджет типа "Кнопка".
    */
-  def button(caption: String, x: Int, y: Int, width: Option[Int] = None, height: Option[Int] = None): Widget = {
+  def button(id: String, caption: String, x: Int, y: Int, width: Option[Int] = None, height: Option[Int] = None, onclick: String): Widget = {
     def formatter(widget: Widget): String =
       s"""<input
+         |   id="$id"
          |   value="${widget.caption}"
          |   type="button"
          |   class="absolute border px-2 py-1 bg-gray-50 hover:bg-gray-50"
          |   style="left: ${widget.x}px; top: ${widget.y}px;"
+         |   onclick="$onclick"
          |   />
          |""".stripMargin
 
-    Widget(caption, x, y, width, height, formatter)
+    Widget(id, caption, x, y, width, height, htmlFormatter = formatter)
   }
 
   /**
    * Виджет типа "Текстовая форма".
    */
-  def textBox(caption: String, x: Int, y: Int, width: Option[Int] = None, height: Option[Int] = None): Widget = {
+  def textBox(id: String, caption: String, x: Int, y: Int, width: Option[Int] = None, height: Option[Int] = None, onclick: String, oninput: String): Widget = {
     def formatter(widget: Widget): String =
       s"""<input
+         |   id="$id"
          |   value="${widget.caption}"
          |   type="text"
          |   class="absolute border px-2 py-1"
          |   style="left: ${widget.x}px; top: ${widget.y}px;"
+         |   onclick="$onclick"
+         |   oninput="$oninput"
          |   />
          |""".stripMargin
 
-    Widget(caption, x, y, width, height, formatter)
+    Widget(id, caption, x, y, width, height, htmlFormatter = formatter)
   }
 
   /**
    * Виджет типа "Метка".
    */
-  def label(caption: String, x: Int, y: Int, width: Option[Int] = None, height: Option[Int] = None): Widget = {
+  def label(id: String, caption: String, x: Int, y: Int, width: Option[Int] = None, height: Option[Int] = None, onclick: String): Widget = {
     def formatter(widget: Widget): String =
       s"""<div
+         |   id="$id"
          |   class="absolute px-2 py-1"
+         |   onclick="$onclick"
          |   style="left: ${widget.x}px; top: ${widget.y}px;">${widget.caption}</div>
          |""".stripMargin
 
-    Widget(caption, x, y, width, height, formatter)
+    Widget(id, caption, x, y, width, height, htmlFormatter = formatter)
   }
 
-  def apply(`type`: String)(caption: String, x: Int, y: Int, width: Option[Int] = None, height: Option[Int] = None): Widget = {
+  def apply(`type`: String)(id: String, caption: String, x: Int, y: Int, width: Option[Int] = None, height: Option[Int] = None, onclick: String, oninput: String): Widget = {
     `type` match {
-      case "Button" => button(caption, x, y, width, height)
-      case "TextBox" => textBox(caption, x, y, width, height)
-      case "Label" => label(caption, x, y, width, height)
+      case "Button" => button(id, caption, x, y, width, height, onclick = onclick)
+      case "TextBox" => textBox(id, caption, x, y, width, height, onclick = onclick, oninput = oninput)
+      case "Label" => label(id, caption, x, y, width, height, onclick)
       case _ => throw new IllegalArgumentException(s"""There's no such widget "${`type`}" in standard library""")
     }
   }
