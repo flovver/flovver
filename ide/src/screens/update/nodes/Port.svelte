@@ -2,18 +2,31 @@
     import { connectionMessages } from "../stores";
     import { onDestroy } from "svelte";
 
+    export let node;
+
+    export let index = 0;
+    export let passBy: "value" | "thunk" = "value";
+
+    export let type: "input" | "output" = "input";
+    export let position: "internal" | "external" = "external";
+
     export let x: number;
     export let y: number;
 
-    const p = { x: x, y: y };
+    const p = {
+        index: index,
+        passBy: passBy,
+        type: type,
+        position: position,
+        node: node,
+        x: x,
+        y: y,
+    };
 
     $: {
         refreshSource(x, y);
         refreshDestination(x, y);
     }
-
-    export let type: "input" | "output" = "input";
-    export let position: "internal" | "external" = "external";
 
     export let hideable: boolean = false;
 

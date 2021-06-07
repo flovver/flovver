@@ -1,8 +1,22 @@
 <script lang="ts">
     import Line from "./connections/Line.svelte";
     import { connectionMessages } from "./stores";
+    import { state } from "../common/global-state";
 
     let connections = [];
+
+    $: {
+        state.update((v) => {
+            if (!v.update) {
+                v.update = {};
+            }
+            if (!v.update.relationships) {
+                v.update.relationships = {};
+            }
+            v.update.relationships = connections;
+            return v;
+        });
+    }
 
     let source = null;
 

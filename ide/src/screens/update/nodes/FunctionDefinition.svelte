@@ -104,6 +104,8 @@
 </div>
 {#each inputs as _, i}
     <Port
+        node={data}
+        index={i}
         x={viewportOffsetX + x - 6}
         y={viewportOffsetY + y + inputStartY + inputGap * i - 6}
         type="input"
@@ -111,6 +113,7 @@
     />
 {/each}
 <Port
+    node={data}
     x={viewportOffsetX + x + width - 6}
     y={viewportOffsetY + y + height / 2 - 6}
     type="output"
@@ -129,11 +132,13 @@
     ><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg
 >
 <Port
+    node={data}
+    passBy={"thunk"}
     x={viewportOffsetX + x + width / 2 - 3}
     y={viewportOffsetY + y + height - 6}
     hideable={true}
     type="output"
-    position="internal"
+    position="external"
 />
 <Moveable
     {target}

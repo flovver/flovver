@@ -5,7 +5,8 @@
     export let data;
 
     export let title: string;
-    export let type: "input" | "output" = data.type == "model-output" ? "input" : "output";
+    export let type: "input" | "output" =
+        data.type == "model-output" ? "input" : "output";
 
     export let viewportOffsetX: number = 0;
     export let viewportOffsetY: number = 0;
@@ -46,13 +47,15 @@
     {/if}
     <div
         bind:this={portBkg}
-        class="border-2 rounded-full w-3 h-3 {type ==
-        'output'
-            ? 'mt-1'
-            : ''}"
+        class="border-2 rounded-full w-3 h-3 {type == 'output' ? 'mt-1' : ''}"
     />
     {#if type == "input"}
         <div class="italic">{title}</div>
     {/if}
 </div>
-<Port x={viewportOffsetX + x + portOffsetX} y={viewportOffsetY + y + portOffsetY} type={type} />
+<Port
+    node={data}
+    x={viewportOffsetX + x + portOffsetX}
+    y={viewportOffsetY + y + portOffsetY}
+    {type}
+/>

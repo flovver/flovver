@@ -47,7 +47,20 @@ export function renderProjectJson(st: any): string {
                 if (v.parent) r.parent = a.indexOf(v.parent);
                 return r;
             }),
-            relationships: []
+            relationships: st.update.relationships.map((v, i, a) => {
+                const r: any = {
+                    def: st.update.nodes.indexOf(v.source.node),
+                    use: st.update.nodes.indexOf(v.destination.node),
+                    'use-arg': v.destination.index,
+                    'pass-by': v.source.passBy,
+                    location: (v.source.position == 'internal' && v.source.type == 'input') || (v.destination.position == 'interal' && v.destination.type == 'output') ? 'internal' : 'external',
+                };
+                if (v.source.position == 'internal' && v.source.type == 'input') {
+                    r.parameter = v.source.index;
+                }
+
+                return r;
+            })
         }
     };
     return JSON.stringify(p);
