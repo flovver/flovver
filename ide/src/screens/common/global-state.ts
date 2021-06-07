@@ -53,7 +53,7 @@ export function renderProjectJson(st: any): string {
                     use: st.update.nodes.indexOf(v.destination.node),
                     'use-arg': v.destination.index,
                     'pass-by': v.source.passBy,
-                    location: (v.source.position == 'internal' && v.source.type == 'input') || (v.destination.position == 'interal' && v.destination.type == 'output') ? 'internal' : 'external',
+                    location: (v.source.position == 'internal' && v.source.type == 'input') || (v.destination.position == 'internal' && v.destination.type == 'output') || v.destination.node.type == 'model-output' ? 'internal' : 'external',
                 };
                 if (v.source.position == 'internal' && v.source.type == 'input') {
                     r.parameter = v.source.index;

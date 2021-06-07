@@ -42,12 +42,16 @@
     }
   }
 
-  export let saveProject;
+  export let saveProject: () => Promise<Response>;
 
-  async function buildProject() {}
+  async function buildProject() {
+    await saveProject();
+    await fetch('/api/compile');
+  }
 
   async function runProject() {
-    await saveProject();
+    await buildProject();
+    window.open('/preview', '_blank');
   }
 
   let lastKeyX = false;
@@ -70,7 +74,7 @@
         break;
     
       case 'r':
-        await runProject();
+        if (!e.ctrlKey) await runProject();
         break;
 
       case 'p':
