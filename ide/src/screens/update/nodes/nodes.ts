@@ -10,7 +10,8 @@ export const functions = {
     "Mul": { inputs: ["Number", "Number"], output: "Number" },
     "Num1": { inputs: [], output: "Number" },
     "StrToNum": { inputs: ["String"], output: "Number" },
-    "Minus1": { inputs: ["Number"], output: "Number" }
+    "Minus1": { inputs: ["Number"], output: "Number" },
+    "DispatchFactorial": { inputs: ["Message", "(NewInput) -> A", "(ComputeFactorial) -> A"], output: "A" }
 };
 
 export const componentsByType = {

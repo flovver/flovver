@@ -30,6 +30,8 @@
         caption: v.caption,
         x: v.x,
         y: v.y,
+        onclick: v.onclick,
+        oninput: v.oninput,
         component: widgetsByName[v.type],
         deleteAction: (i) => {
             widgets.splice(i, 1);
@@ -56,6 +58,8 @@
             x: e.clientX - viewportOffsetX,
             y: e.clientY - viewportOffsetY,
             component: widgetsByName[name],
+            onclick: "",
+            oninput: "",
             deleteAction: (i) => {
                 widgets.splice(i, 1);
                 widgets = widgets;
@@ -100,6 +104,8 @@
         {setCurrentWidget}
         bind:x={widget.x}
         bind:y={widget.y}
+        bind:oninp={widget.oninput}
+        bind:onclk={widget.onclick}
         bind:viewportOffsetX
         bind:viewportOffsetY
     />

@@ -8,6 +8,9 @@
     export let width: number;
     export let height: number;
 
+    export let oninp: string;
+    export let onclk: string;
+
     export let viewportOffsetX: number = 0;
     export let viewportOffsetY: number = 0;
 
@@ -27,6 +30,10 @@
             setW: (v) => (width = v),
             height: height,
             setH: (v) => (height = v),
+            oninp: oninp,
+            setOninp: (v) => (oninp = v),
+            onclk: onclk,
+            setOnclk: (v) => (onclk = v),
             edit: false,
             hasPosition: true,
             deleteAction: deleteAction,

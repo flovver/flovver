@@ -9,11 +9,16 @@
 
     let caption;
 
+    let oninp;
+    let onclk;
+
     $: if (!currentWidget?.edit) x = currentWidget?.x;
     $: if (!currentWidget?.edit) y = currentWidget?.y;
     $: if (!currentWidget?.edit) width = currentWidget?.width;
     $: if (!currentWidget?.edit) height = currentWidget?.height;
     $: if (!currentWidget?.edit) caption = currentWidget?.caption;
+    $: if (!currentWidget?.edit) oninp = currentWidget?.oninp;
+    $: if (!currentWidget?.edit) onclk = currentWidget?.onclk;
 
     $: if (currentWidget?.edit && currentWidget.setCaption) {
         currentWidget.setCaption(caption);
@@ -29,6 +34,12 @@
     }
     $: if (currentWidget?.edit && currentWidget.setH) {
         currentWidget.setH(height);
+    }
+    $: if (currentWidget?.edit && currentWidget.setOninp) {
+        currentWidget.setOninp(oninp);
+    }
+    $: if (currentWidget?.edit && currentWidget.setOnclk) {
+        currentWidget.setOnclk(onclk);
     }
 
     function enableEdit() {
@@ -111,6 +122,27 @@
         </div>
     {/if}
     {#if currentWidget.name != "Pane"}
+        <div class="mt-4">
+            <div class="px-4 font-medium text-gray-900">Events</div>
+            <div class="flex p-4 justyify-center">
+                <div class="mr-2 text-gray-600">onclick</div>
+                <input
+                    bind:value={onclk}
+                    on:input={enableEdit}
+                    class="w-full"
+                    type="text"
+                />
+            </div>
+            <div class="flex p-4 justyify-center">
+                <div class="mr-2 text-gray-600">oninput</div>
+                <input
+                    bind:value={oninp}
+                    on:input={enableEdit}
+                    class="w-full"
+                    type="text"
+                />
+            </div>
+        </div>
         <div class="mt-4">
             <div class="px-4 font-medium text-gray-900">Extra</div>
             <div class="p-4">

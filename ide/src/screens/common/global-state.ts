@@ -9,7 +9,8 @@ export function renderProjectJson(st: any): string {
             flags: {
                 "tail-call-elimination": st.compilerFlags.tail,
                 "fibonacci-elimination": st.compilerFlags.fib,
-                "common-recursion-memoization": st.compilerFlags.memoization
+                "common-recursion-memoization": st.compilerFlags.memoization,
+                debug: true
             }
         },
         model: {
