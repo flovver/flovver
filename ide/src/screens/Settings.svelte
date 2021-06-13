@@ -54,7 +54,6 @@
                   <CheckBox
                     id="tail"
                     let:title
-                    disabled={true}
                     bind:checked={tailCall}
                     description="Optimize proper tail calls."
                   >

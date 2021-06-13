@@ -17,7 +17,9 @@ object Call {
   }
 }
 
-trait Definition extends Node with Application with Abstraction
+trait Definition extends Node with Application with Abstraction {
+  var isTailRecursive: Boolean = false
+}
 
 object Definition {
   class Impl(override val arity: Int) extends Definition {
@@ -32,7 +34,9 @@ object Definition {
   }
 }
 
-trait RecursiveCall extends Call with Recursion
+trait RecursiveCall extends Call with Recursion {
+  var isTail: Boolean = false
+}
 
 // TODO: задавать arity неявно?
 object RecursiveCall {

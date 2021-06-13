@@ -51,7 +51,7 @@ object Actions {
              |            "type": "String"
              |          },
              |          {
-             |            "name": "ComputeFactorial",
+             |            "name": "Compute",
              |            "type": "Unit"
              |          }
              |        ]
@@ -85,7 +85,7 @@ object Actions {
              |        "caption": "Compute",
              |        "x": 330,
              |        "y": 14,
-             |        "onclick": "signal({ tag: 'ComputeFactorial' })",
+             |        "onclick": "signal({ tag: 'Compute' })",
              |        "oninput": ""
              |      }
              |    ]

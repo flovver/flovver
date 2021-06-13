@@ -7,11 +7,16 @@ export const primitivesList = ['Definition', 'self'];
 export const functions = {
     'If': { inputs: ["Bool", "() -> A", "() -> A"], output: "A" },
     'Eq': { inputs: ["A", "A"], output: "Bool" },
+    'LEq': { inputs: ["A", "A"], output: "Bool" },
     "Mul": { inputs: ["Number", "Number"], output: "Number" },
+    "Add": { inputs: ["Number", "Number"], output: "Number" },
     "Num1": { inputs: [], output: "Number" },
+    "Num0": { inputs: [], output: "Number" },
     "StrToNum": { inputs: ["String"], output: "Number" },
     "Minus1": { inputs: ["Number"], output: "Number" },
-    "DispatchFactorial": { inputs: ["Message", "(NewInput) -> A", "(ComputeFactorial) -> A"], output: "A" }
+    "Minus2": { inputs: ["Number"], output: "Number" },
+    "Dispatch": { inputs: ["Message", "(NewInput) -> A", "(Compute) -> A"], output: "A" },
+    "Identity": { inputs: ["A"], output: "A" }
 };
 
 export const componentsByType = {

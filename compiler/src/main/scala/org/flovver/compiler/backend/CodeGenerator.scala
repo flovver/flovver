@@ -67,13 +67,13 @@ trait CodeGenerator {
     s"$name$callPolicy"
   }
 
-  def generateRecursiveCall(label: String)(abstraction: Node with Abstraction, args: mutable.Seq[Link]): Unit = {
+  def generateRecursiveCall(label: String)(abstraction: Node with Abstraction, args: mutable.Seq[Link], isTail: Boolean = false): Unit = {
     val self = s"${abstraction.label.get}_r"
 
     val parameters = args.zipWithIndex.filter(_._1 == null).map(v => s"${label}_arg_${v._2}").mkString(",")
     val arguments = args.zipWithIndex.map(generateArg(label)).mkString(",")
 
-    result.println(s"const $label = ($parameters) => $self($arguments);")
+    result.println(s"const $label = ($parameters) => ${if (!isTail) s"$self($arguments)" else s"Tail($self,$arguments)"};")
   }
 
   def generateCall(label: String)(name: String, args: mutable.Seq[Link]): Unit = {
@@ -83,20 +83,26 @@ trait CodeGenerator {
     result.println(s"const $label = ($parameters) => $name($arguments);")
   }
 
-  def generateDefinitionStart(label: String)(args: mutable.Seq[Link]): Unit = {
+  def generateDefinitionStart(label: String)(args: mutable.Seq[Link], isTailRec: Boolean = false): Unit = {
+    val initPostfix = if (isTailRec) "_i" else ""
+
     val arguments = args.zipWithIndex.filter(_._1 == null).map(v => s"${label}_arg_${v._2}").mkString(",")
-    val parameters = args.zipWithIndex.map(v => s"${label}_arg_${v._2}").mkString(",")
+    val parameters = args.zipWithIndex.map(v => s"${label}_arg_${v._2}$initPostfix").mkString(",")
+
+    val tailRecAccumulators = if (isTailRec) {
+      s"\nlet [${args.zipWithIndex.map(v => s"${label}_arg_${v._2}").mkString(",")}] = [$parameters];"
+    } else ""
 
     if (Env.useCommonRecursionMemoization) {
       result.println(
         s"""const $label = ($arguments) => {
            |const ${label}_r = (() => {
            |const ${label}_st = {};
-           |const ${label}_w = ($parameters) => {""".stripMargin)
+           |const ${label}_w = ($parameters) => {$tailRecAccumulators""".stripMargin)
     } else {
       result.println(
         s"""const $label = ($arguments) => {
-           |const ${label}_r = ($parameters) => {""".stripMargin)
+           |const ${label}_r = ($parameters) => {$tailRecAccumulators""".stripMargin)
     }
   }
 
@@ -105,7 +111,7 @@ trait CodeGenerator {
   }
 
   def generateUpdateFunctionBody(): Unit = {
-    val definitionEnds = mutable.Stack[(String, mutable.Seq[Link], Node, Link)]()
+    val definitionEnds = mutable.Stack[(String, mutable.Seq[Link], Node, Link, Boolean)]()
 
     for (node <- nodes) {
 
@@ -115,27 +121,43 @@ trait CodeGenerator {
       }
 
       node match {
-        case RecursiveCall(abstraction, args) => generateRecursiveCall(label)(abstraction, args)
+        case rCall @ RecursiveCall(abstraction, args) => generateRecursiveCall(label)(abstraction, args, isTail = rCall.asInstanceOf[RecursiveCall].isTail)
         case Call(name, args) => generateCall(label)(name, args)
-        case Definition(args, output) =>
-          definitionEnds.push((label, args, output.map(_.`def`).get, output.get))
-          generateDefinitionStart(label)(args)
+        case d @ Definition(args, output) =>
+          val definition = d.asInstanceOf[Definition]
+          definitionEnds.push((label, args, output.map(_.`def`).get, output.get, definition.isTailRecursive))
+          generateDefinitionStart(label)(args, isTailRec = definition.isTailRecursive)
         case ModelInput | MessageInput | ModelOutput =>
         case _ => throw new IllegalStateException()
       }
 
       if (definitionEnds.headOption.exists(_._3 == node)) {
-        val (label, args, _, link) = definitionEnds.pop()
+        val (label, args, _, link, isTailRec) = definitionEnds.pop()
+
+        lazy val parameters = args.zipWithIndex.map(v => s"${label}_arg_${v._2}").mkString(",")
 
         val memoizationWrapper = if (Env.useCommonRecursionMemoization) {
-          val parameters = args.zipWithIndex.map(v => s"${label}_arg_${v._2}").mkString(",")
           s"""
              |return ($parameters) => ${label}_st[[$parameters]] = ${label}_st[[$parameters]] || ${label}_w($parameters);
              |})();""".stripMargin
         } else ""
 
+        val returnStatement = if (isTailRec) {
+          s"""while (true) {
+             |const result = ${node.label.get}();
+             |if (IsTail(result)) {
+             |[$parameters] = result.parameters;
+             |continue;
+             |}
+             |return result;
+             |}
+             |""".stripMargin
+        } else {
+          s"return ${node.label.get}${if (link.isValue) "()" else ""};"
+        }
+
         result.println(
-          s"""return ${node.label.get}${if (link.isValue) "()" else ""};
+          s"""$returnStatement
              |}$memoizationWrapper
              |return ${label}_r(${args.zipWithIndex.map(generateArg(label)).mkString(",")});
              |}""".stripMargin)
@@ -154,11 +176,18 @@ trait CodeGenerator {
     result.println(
       """const If = (c, l, r) => c ? l() : r();
         |const Eq = (x, y) => x == y;
+        |const LEq = (x, y) => x <= y;
         |const Mul = (x, y) => x * y;
+        |const Add = (x, y) => x + y;
+        |const Num0 = () => 0;
         |const Num1 = () => 1;
         |const StrToNum = (x) => x;
         |const Minus1 = (x) => x - 1;
-        |const DispatchFactorial = (msg, NewInput, ComputeFactorial) => msg.tag == 'NewInput' ? NewInput(msg.value) : ComputeFactorial();
+        |const Minus2 = (x) => x - 2;
+        |const Dispatch = (msg, NewInput, Compute) => msg.tag == 'NewInput' ? NewInput(msg.value) : Compute();
+        |const Identity = (x) => x;
+        |const Tail = (f, ...args) => ({ type: 'tail', f: f, parameters: args });
+        |const IsTail = (v) => typeof v == 'object' && v.type == 'tail';
         |""".stripMargin)
   }
 

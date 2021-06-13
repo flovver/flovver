@@ -1,6 +1,7 @@
 package org.flovver.compiler.ir
 
 import scala.collection.mutable
+import scala.reflect.ClassTag
 
 trait Sandbox {
   val links: mutable.Buffer[Link] = mutable.Buffer()
@@ -13,6 +14,10 @@ trait Sandbox {
   def addNode[N <: Node](n: N): N = {
     nodes.append(n)
     n
+  }
+
+  def collect[T : ClassTag]: Iterator[T] = {
+    nodes.collect { case v: T => v }.iterator
   }
 
   // external
